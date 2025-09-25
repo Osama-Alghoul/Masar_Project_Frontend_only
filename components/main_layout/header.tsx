@@ -35,7 +35,7 @@ import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { UserInfo } from "@/lib/types";
+import { user_session } from "@/public/mock-data/logged/mock-data";
 import { useRouter } from "next/navigation";
 
 interface Notifications {
@@ -99,14 +99,14 @@ export default function Header() {
 
   useEffect(() => {
     // Check for authToken in localStorage on component mount
-    const token = localStorage.getItem("authToken");
-    if (token) {
+    const user = localStorage.getItem("user_info");
+    if (user) {
       setIsLoggedIn(true);
     }
   }, []);
 
   useEffect(() => {
-    const userInfoString = localStorage.getItem("userInfo");
+    const userInfoString = localStorage.getItem("user_Info");
     if (userInfoString) {
       try {
         setUserInfo(JSON.parse(userInfoString));
@@ -117,16 +117,10 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      fetch(`${BASE_API_URL}/api/notifications`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => setNotifications(data.notifications));
-    }
+    const user_info = localStorage.getItem("user_info");
+    const data = JSON.parse(user_info);
+    setUserInfo(data);
+    setNotifications([data.notifications]);
   }, []);
 
   useEffect(() => {
@@ -149,89 +143,10 @@ export default function Header() {
   ];
 
   function HandelLogout() {
-    localStorage.removeItem("tokenType");
-    localStorage.removeItem("userInfo");
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("user_info");
     Router.push("/");
   }
 
-  const markAsRead = async (id: number) => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      try {
-        const response = await fetch(
-          `${BASE_API_URL}/api/notifications/${id}/read`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.ok) {
-          setNotifications(
-            notifications.map((n) =>
-              n.id === id ? { ...n, is_read: true } : n
-            )
-          );
-        } else {
-          console.error("Failed to mark notification as read");
-        }
-      } catch (error) {
-        console.error("Error marking notification as read:", error);
-      }
-    }
-  };
-
-  const markAllAsRead = async () => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      try {
-        const response = await fetch(
-          `${BASE_API_URL}/api/notifications/read-all`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.ok) {
-          setNotifications(
-            notifications.map((n) => (n.is_read ? n : { ...n, is_read: true }))
-          );
-        } else {
-          console.error("Failed to mark all notifications as read");
-        }
-      } catch (error) {
-        console.error("Error marking all notifications as read:", error);
-      }
-    }
-  };
-
-  const deleteAllNotifications = async () => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      try {
-        const response = await fetch(
-          `${BASE_API_URL}/api/notifications/clear`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.ok) {
-          setNotifications([]);
-        } else {
-          console.error("Failed to delete all notifications");
-        }
-      } catch (error) {
-        console.error("Error deleting all notifications:", error);
-      }
-    }
-  };
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState<suggestion>({
     status: false,
@@ -390,7 +305,7 @@ export default function Header() {
                     <Bell className="h-5 w-5" />
                     {notifications.length !== 0 && (
                       <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                        {notifications.filter((n) => !n.is_read).length}
+                        1
                       </Badge>
                     )}
                   </Button>
@@ -407,7 +322,6 @@ export default function Header() {
                       <DropdownMenuItem
                         key={notification.id}
                         className="flex flex-col items-start justify-between border-t rounded-none group"
-                        onClick={() => markAsRead(notification.id)}
                       >
                         <div className="flex items-start justify-between w-full">
                           <div className="flex items-start gap-2 w-10/12 ">
@@ -420,7 +334,9 @@ export default function Header() {
                                 case "notification":
                                 case "maintenance":
                                 case "update":
-                                  return <Bell className="h-5 w-5 text-yellow-400 group-hover:text-white" />;
+                                  return (
+                                    <Bell className="h-5 w-5 text-yellow-400 group-hover:text-white" />
+                                  );
                                 case "account_approved":
                                 case "account_suspended":
                                   return (
@@ -464,7 +380,7 @@ export default function Header() {
                                   security_alert: "تنبيه أمني",
                                   rating: "تقييم",
                                   comment: "تعليق",
-                                }[notification.type_name] || "موافق"}
+                                }[notification.type_name] || "اشعار"}
                               </span>
                             </div>
                           </div>
@@ -508,7 +424,7 @@ export default function Header() {
                   {notifications.filter((n) => !n.is_read).length > 0 && (
                     <>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={markAllAsRead}>
+                      <DropdownMenuItem>
                         <CheckCheck className="h-4 w-4 mr-2" />
                         تعليم الكل كمقروء
                       </DropdownMenuItem>
@@ -517,10 +433,7 @@ export default function Header() {
                   {notifications.length > 0 && (
                     <>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={deleteAllNotifications}
-                        className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
-                      >
+                      <DropdownMenuItem className="text-destructive focus:bg-destructive focus:text-destructive-foreground">
                         <Trash2 className="h-4 w-4 mr-2" />
                         حذف الكل
                       </DropdownMenuItem>
@@ -536,9 +449,7 @@ export default function Header() {
                     className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-background"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>
-                        {userInfo?.name?.substring(0, 2)}
-                      </AvatarFallback>
+                      <AvatarFallback>As</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -639,12 +550,17 @@ export default function Header() {
                   <div className="grid gap-3">
                     {isLoggedIn ? (
                       <>
-                        <Link
-                          href={`/${userInfo?.id ?? ""}/dashboard`}
-                          className="text-sm font-medium transition-colors hover:text-primary"
-                        >
-                          لوحة التحكم
-                        </Link>
+                        
+                          <Link
+                            href={`/${
+                              userInfo?.role === "admin" ? "admin" : "seller"
+                            }/dashboard`}
+                            className="text-sm font-medium transition-colors hover:text-primary"
+                          >
+                            لوحة التحكم
+                          </Link>
+
+
                         <Link
                           href={`/profile/${userInfo?.id}`}
                           className="text-sm font-medium transition-colors hover:text-primary"

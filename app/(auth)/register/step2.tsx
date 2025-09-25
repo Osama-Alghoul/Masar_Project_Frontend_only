@@ -20,8 +20,6 @@ export default function RegisterStep2({
   onPrevious,
 }: RegisterStep2Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
-  const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
@@ -30,7 +28,6 @@ export default function RegisterStep2({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [registrationError, setRegistrationError] = useState("");
   const [onFocus, setOnFocus] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [failuer, setFailure] = useState(false);
 
   const isAnyFieldEmpty =
@@ -71,56 +68,14 @@ export default function RegisterStep2({
       setIsSubmitting(false);
       return;
     }
-
-    const registrationData = {
-      first_name: firstName,
-      last_name: lastName,
-      username: username,
-      email: email,
-      password: password,
-      account_type: account_type,
-    };
-
-    try {
-      const response = await fetch(`${BASE_API_URL}/api/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(registrationData),
-      });
-
-      if (response.ok) {
-        setSuccess(true);
-        router.push("/login");
-      } else {
-        setFailure(true);
-      }
-    } catch (error) {
-      setFailure(true);
-      console.error("Error during registration:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    setFailure(true);
+    setIsSubmitting(false);
   };
-
-  useEffect(() => {
-    if (localStorage.getItem("authToken")) {
-      router.push("/");
-    }
-  }, [router]);
 
   return (
     <>
       <CustomAlert
-        message="تم التسجيل بنجاح"
-        show={success}
-        onClose={() => setSuccess(false)}
-        success
-      />
-      <CustomAlert
-        message="فشل التسجيل"
+        message="لا يمكنك انشاء حسابات في هذه النسخة الأولية ☺️"
         show={failuer}
         onClose={() => setFailure(false)}
         success={false}

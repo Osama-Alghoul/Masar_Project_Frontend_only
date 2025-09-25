@@ -24,8 +24,8 @@ import { Filter, Search, ShoppingBag } from "lucide-react";
 import Header from "@/components/main_layout/header";
 import PageTitle from "@/components/main_layout/PageTitle";
 import PageBanner from "@/components/main_layout/PageBanner";
-import { guest_products } from "@/public/mock-data/guest/products";
-import { guest_categories } from "@/public/mock-data/guest/categories";
+import { guest_products } from "@/public/mock-data/guest/mock-data";
+import { guest_categories } from "@/public/mock-data/guest/mock-data";
 
 interface StoreItem {
   id: number;

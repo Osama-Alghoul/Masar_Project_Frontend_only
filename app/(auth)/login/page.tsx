@@ -13,10 +13,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LogIn } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LoginSuccessResponse, LoginErrorResponse } from "@/lib/types";
 import AuthLayout from "@/components/auth/AuthLayout";
+import { user_session } from "@/public/mock-data/logged/mock-data";
+import { Avatar } from "@/components/ui/avatar";
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
@@ -24,7 +25,6 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,30 +32,27 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${BASE_API_URL}/api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const errorData: LoginErrorResponse = await response.json();
-        setError(
-          errorData.message || "Login failed. Please check your credentials."
+      if (email === "user@example.com" && password === "password") {
+        localStorage.setItem(
+          "user_info",
+          JSON.stringify(user_session.data.user)
         );
-        return;
+        router.push("/");
+      } else if (email === "seller@example.com" && password === "password") {
+        localStorage.setItem(
+          "user_info",
+          JSON.stringify(user_session.data.seller)
+        );
+        router.push("/");
+      } else if (email === "admin@example.com" && password === "password") {
+        localStorage.setItem(
+          "user_info",
+          JSON.stringify(user_session.data.admin)
+        );
+        router.push("/");
+      } else {
+        setError("Invalid email or password.");
       }
-
-      const data: LoginSuccessResponse = await response.json();
-
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("tokenType", data.token_type);
-      localStorage.setItem("userInfo", JSON.stringify(data.user_info));
-
-      router.push("/");
     } catch (err: any) {
       console.error("Error during sign-in:", err);
       setError("An unexpected error occurred. Please try again.");
@@ -63,12 +60,6 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("authToken")) {
-      router.push("/");
-    }
-  }, [router]);
 
   return (
     <AuthLayout title="مرحباً" Subtitle="أدخل بياناتك لتتمكن من الدخول لحسابك">
@@ -146,6 +137,38 @@ const LoginPage: React.FC = () => {
                 انشاء حساب
               </Link>
             </p>
+            <Card className="w-full">
+              <CardHeader>حسابات تجريبية</CardHeader>
+              <CardContent className="grid gap-4">
+                <div className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted">
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium leading-none">مستخدم</p>
+                    <p className="text-sm text-muted-foreground">
+                      user@example.com
+                    </p>
+                    <p className="text-sm text-muted-foreground">password</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted">
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium leading-none">بائع</p>
+                    <p className="text-sm text-muted-foreground">
+                      seller@example.com
+                    </p>
+                    <p className="text-sm text-muted-foreground">password</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted">
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-medium leading-none">مدير</p>
+                    <p className="text-sm text-muted-foreground">
+                      admin@example.com
+                    </p>
+                    <p className="text-sm text-muted-foreground">password</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </CardFooter>
         </form>
       </Card>
