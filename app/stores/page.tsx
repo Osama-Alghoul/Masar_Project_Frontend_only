@@ -9,11 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Filter,
-  Search,
-  ShoppingBag,
-} from "lucide-react";
+import { Filter, Search, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -27,7 +23,7 @@ import {
 import Header from "@/components/main_layout/header";
 import PageTitle from "@/components/main_layout/PageTitle";
 import PageBanner from "@/components/main_layout/PageBanner";
-// Import the new component
+import { stores as storesData } from "@/public/mock-data/logged/mock-data";
 import StoreCard_Map from "@/components/stores/storeCardAndMap";
 import { Store } from "@/types/store";
 
@@ -44,38 +40,17 @@ export default function StoresPage() {
   const [sortBy, setSortBy] = useState<string>("newest");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  // State for controlling the expanded map, moved here
   const [expandedStoreId, setExpandedStoreId] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${API_URL}/api/guest/stores`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const json: ApiResponse = await response.json();
-        if (json.status && Array.isArray(json.data)) {
-          // Convert status to number if it's not already
-          const formattedStores = json.data.map(store => ({
-            ...store,
-            status: typeof store.status === 'string' ? (store.status === 'active' ? 1 : 0) : store.status
-          }));
-          setStores(formattedStores);
-        } else {
-          setError(
-            "API returned an unexpected data structure or status false."
-          );
-        }
-      } catch (e: any) {
-        setError(`Failed to fetch stores: ${e.message}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStores();
+    try {
+      setLoading(true);
+      setStores(storesData.data);
+    } catch (e: any) {
+      setError(`Failed to fetch stores: ${e.message}`);
+    } finally {
+      setLoading(false);
+    }
   }, [API_URL]);
 
   const filteredAndSortedStores = useMemo(() => {

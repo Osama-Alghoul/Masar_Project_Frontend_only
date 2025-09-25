@@ -59,6 +59,50 @@ export const user_session = {
   },
 };
 
-export const stores{
-    
-}
+export const stores = {
+  status: true,
+  data: [
+    {
+      id: 1,
+      user_id: 2,
+      store_name: "Cruickshank, Strosin and Fisher",
+      phone: "586-253-8688",
+      location_address: "7462 Clay Stravenue\nAnabelhaven, IL 38407",
+      status: "active",
+      created_at: "2025-09-08T07:59:17.000000Z",
+      updated_at: "2025-09-08T08:01:31.000000Z",
+      latitude: null,
+      longitude: null,
+      average_rating: 5,
+      store_image: "http://127.0.0.1:8000/storage/default-id.jpg",
+    },
+    {
+      id: 2,
+      user_id: 4,
+      store_name: "Jameel store",
+      phone: "+97632759314",
+      location_address: "غزة الدرج",
+      status: "active",
+      created_at: "2025-09-08T08:05:30.000000Z",
+      updated_at: "2025-09-08T08:42:36.000000Z",
+      latitude: 31.4880553418185,
+      longitude: 34.4145951190066,
+      average_rating: 4,
+      store_image: "http://127.0.0.1:8000/storage/default-id.jpg",
+    },
+    {
+      id: 6,
+      user_id: 9,
+      store_name: "Osama store",
+      phone: "+97632759314",
+      location_address: "غزة الدرج",
+      status: "active",
+      created_at: "2025-09-10T10:59:00.000000Z",
+      updated_at: "2025-09-10T10:59:28.000000Z",
+      latitude: 31.5160397873213,
+      longitude: 34.4623958327285,
+      average_rating: 4.5,
+      store_image: "http://127.0.0.1:8000/storage/default-id.jpg",
+    },
+  ],
+};

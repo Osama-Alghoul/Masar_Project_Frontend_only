@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Loading from "./loading";
 import Header from "@/components/main_layout/header";
+import { map_data } from "@/public/mock-data/guest/mock-data";
 
 // Dynamically import the map component to avoid SSR issues
 const GazaMap = dynamic(() => import("@/components/maps/map"), {
@@ -44,31 +45,17 @@ export interface GazaData {
 }
 
 export default function AdminMapPage() {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const [mapData, setMapData] = useState<GazaData>();
 
   useEffect(() => {
-    async function fetchStoresData() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/map-data`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok)
-          throw new Error(`HTTP error! status: ${response.status}`);
-        const responseData = await response.json();
-        setMapData(responseData.services);
-      } catch (error) {
-        console.error("Error fetching stores data:", error);
-      }
+    try {
+      setMapData(map_data?.services);
+    } catch (error) {
+      console.error("Error fetching stores data:", error);
     }
-    fetchStoresData();
   }, []);
 
   if (!mapData) return <Loading />;
-  console.log("Map data received:", JSON.stringify(mapData, null, 2));
 
   return (
     <>

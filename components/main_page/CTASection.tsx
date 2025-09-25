@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 export default function CTASection() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // New state for login status
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("user_info");
     if (token) {
       setIsLoggedIn(true);
     }

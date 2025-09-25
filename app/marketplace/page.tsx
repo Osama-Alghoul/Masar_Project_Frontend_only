@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +24,10 @@ import { Filter, Search, ShoppingBag } from "lucide-react";
 import Header from "@/components/main_layout/header";
 import PageTitle from "@/components/main_layout/PageTitle";
 import PageBanner from "@/components/main_layout/PageBanner";
-import { guest_products } from "@/public/mock-data/guest/mock-data";
-import { guest_categories } from "@/public/mock-data/guest/mock-data";
+import {
+  guest_products,
+  guest_categories,
+} from "@/public/mock-data/guest/mock-data";
 
 interface StoreItem {
   id: number;
@@ -79,46 +81,14 @@ export default function MarketplacePage() {
   );
   const [loading, setLoading] = useState(true); // Add loading state
 
-  const fetchData = async () => {
+  useEffect(() => {
     try {
-      setLoading(true);
-      if (guest_products) {
-        // Map category_id to category_name
-        const productsWithCategoryNames = guest_products.data.map((product) => {
-          const category = availableCategories.find(
-            (cat) => cat.id === product.category_id
-          );
-          return {
-            ...product,
-            category_name: category ? category.name : "Uncategorized",
-          };
-        });
-        setProducts(productsWithCategoryNames);
-      } else {
-        console.error("API returned status false:", guest_products);
-      }
+      setProducts(guest_products?.data);
+      setAvailableCategories(guest_categories.data);
     } catch (error) {
-      console.error("Failed to fetch products:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching stores data:", error);
     }
-  };
-  fetchData();
-
-  // Fetch categories
-
-  const fetchCategories = async () => {
-    try {
-      if (guest_categories) {
-        setAvailableCategories(guest_categories.data);
-      } else {
-        console.error("API returned status false for categories:", guest_categories);
-      }
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
-  };
-  fetchCategories();
+  }, []);
 
   const allCategories = [
     ...new Set(availableCategories.map((category) => category.name)),
@@ -280,11 +250,7 @@ export default function MarketplacePage() {
                 </div>
               </div>
 
-              {loading ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <p className="text-lg font-medium">جارٍ تحميل البضائع...</p>
-                </div>
-              ) : sortedProducts.length === 0 ? (
+              {sortedProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <ShoppingBag className="h-12 w-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium">لا يوجد أي بضاعة</h3>

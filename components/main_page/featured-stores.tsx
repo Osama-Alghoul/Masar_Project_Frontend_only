@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Star, MapPin } from "lucide-react";
+import { stores as storesData } from "@/public/mock-data/logged/mock-data";
 
 interface Store {
   id: number;
@@ -21,78 +21,20 @@ interface Store {
   store_image: string;
 }
 
-const storesData = [
-  {
-    id: "1",
-    name: "بنز اند بنز",
-    description:
-      "بنز اند بنز، مكانك الأول والأخير لشراء الهدايا والقرطاسية ومستلزمات الدراسة",
-    categories: ["قرطاسية", "المتاجر الكبرى"],
-    location: {
-      address: "غزة، الرمال، اسفل كابيتال مول",
-      latitude: 37.7749,
-      longitude: -122.4194,
-    },
-    rating: 4.5,
-    coverImage: "/any.jpg",
-    logo: "/any-logo.svg",
-  },
-  {
-    id: "2",
-    name: "بنز اند بنز",
-    description:
-      "بنز اند بنز، مكانك الأول والأخير لشراء الهدايا والقرطاسية ومستلزمات الدراسة",
-    categories: ["قرطاسية", "المتاجر الكبرى"],
-    location: {
-      address: "غزة، الرمال، اسفل كابيتال مول",
-      latitude: 37.7749,
-      longitude: -122.4194,
-    },
-    rating: 4.5,
-    coverImage: "/any.jpg",
-    logo: "/any-logo.svg",
-  },
-  {
-    id: "3",
-    name: "بنز اند بنز",
-    description:
-      "بنز اند بنز، مكانك الأول والأخير لشراء الهدايا والقرطاسية ومستلزمات الدراسة",
-    categories: ["قرطاسية", "المتاجر الكبرى"],
-    location: {
-      address: "غزة، الرمال، اسفل كابيتال مول",
-      latitude: 37.7749,
-      longitude: -122.4194,
-    },
-    rating: 4.5,
-    coverImage: "/any.jpg",
-    logo: "/any-logo.svg",
-  },
-];
-
 export default function FeaturedStores() {
   const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchStores = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/guest/stores`
-        );
-        if (!response.ok) {
-          throw new Error(`Failed to fetch stores, status: ${response.status}`);
-        }
-        const data = await response.json();
-        setStores(data.data || []);
-      } catch (error) {
-        console.error("Error fetching stores:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStores();
+    setIsLoading(true);
+    try {
+      const data = storesData.data;
+      setStores(data);
+    } catch (error) {
+      console.error("Error fetching stores:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   if (isLoading) {
