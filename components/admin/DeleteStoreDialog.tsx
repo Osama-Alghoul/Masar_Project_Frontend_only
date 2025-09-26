@@ -54,21 +54,8 @@ const DeleteStoreDialog: React.FC<DeleteStoreDialogProps> = ({
     setDeleteLoading(true);
 
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error deleting store:", errorData);
-      } else {
         onStoreDeleted(id);
-      }
+      
     } catch (error) {
       console.error("Error deleting store:", error);
     } finally {

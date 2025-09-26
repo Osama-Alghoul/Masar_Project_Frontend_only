@@ -38,22 +38,71 @@ export default function CategoriesPage() {
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   async function fetchCategories() {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/categories`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      setCategories([
+        {
+          id: 1,
+          name: "فواكه طازجة",
+          created_at: "2025-09-08T09:01:54.000000Z",
+          updated_at: "2025-09-08T09:01:54.000000Z",
         },
-      });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const responseData = await response.json();
-      setCategories(responseData);
+        {
+          id: 2,
+          name: "خضروات ورقيات",
+          created_at: "2025-09-25T10:00:00.000000Z",
+          updated_at: "2025-09-25T10:00:00.000000Z",
+        },
+        {
+          id: 3,
+          name: "لحوم ودواجن",
+          created_at: "2025-09-25T10:01:00.000000Z",
+          updated_at: "2025-09-25T10:01:00.000000Z",
+        },
+        {
+          id: 4,
+          name: "أجبان وألبان",
+          created_at: "2025-09-25T10:02:00.000000Z",
+          updated_at: "2025-09-25T10:02:00.000000Z",
+        },
+        {
+          id: 5,
+          name: "مخبوزات وحلويات",
+          created_at: "2025-09-26T12:45:00.000000Z",
+          updated_at: "2025-09-26T12:45:00.000000Z",
+        },
+        {
+          id: 6,
+          name: "مجمدات ومعلبات",
+          created_at: "2025-09-26T12:46:00.000000Z",
+          updated_at: "2025-09-26T12:46:00.000000Z",
+        },
+        {
+          id: 7,
+          name: "مشروبات وعصائر",
+          created_at: "2025-09-26T12:47:00.000000Z",
+          updated_at: "2025-09-26T12:47:00.000000Z",
+        },
+        {
+          id: 8,
+          name: "إلكترونيات وأجهزة",
+          created_at: "2025-09-26T12:55:00.000000Z",
+          updated_at: "2025-09-26T12:55:00.000000Z",
+        },
+        {
+          id: 9,
+          name: "إكسسوارات وهواتف",
+          created_at: "2025-09-26T12:56:00.000000Z",
+          updated_at: "2025-09-26T12:56:00.000000Z",
+        },
+        {
+          id: 10,
+          name: "أدوات منزلية صغيرة",
+          created_at: "2025-09-26T12:57:00.000000Z",
+          updated_at: "2025-09-26T12:57:00.000000Z",
+        },
+      ]);
     } catch (error) {
       console.error("Error fetching stores data:", error);
     } finally {
@@ -65,22 +114,9 @@ export default function CategoriesPage() {
     e.preventDefault();
     const token = localStorage.getItem("authToken");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/categories`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: newCategoryName }),
-      });
-
-      if (!response.ok) {
-        setFailure(true);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       fetchCategories();
       setNewCategoryName("");
-      setMessage("تم إضافة الفئة بنجاح");
+      setMessage("اعترف انت مش ادمن عشان تضيف على راحتك!");
       setSuccess(true);
     } catch (error) {
       console.error("Error adding category:", error);
@@ -91,24 +127,9 @@ export default function CategoriesPage() {
   };
 
   const handleDeleteCategory = async (id: number) => {
-    const token = localStorage.getItem("authToken");
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/categories/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        setFailure(true);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       fetchCategories();
-      setMessage("تم حذف الفئة بنجاح");
+      setMessage("يعني فوق ما انا تعبان فيهم بدك تحذفهم؟");
       setSuccess(true);
     } catch (error) {
       console.error("Error deleting category:", error);
@@ -117,28 +138,11 @@ export default function CategoriesPage() {
 
   const handleUpdateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("authToken");
     if (editingCategoryId === null) return;
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/categories/${editingCategoryId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name: updatedCategoryName }),
-        }
-      );
-
-      if (!response.ok) {
-        setFailure(true);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       fetchCategories();
       setUpdatedCategoryName("");
-      setMessage("تم تحديث الفئة بنجاح");
+      setMessage("خليها هيك احسن خود مني");
       setSuccess(true);
     } catch (error) {
       console.error("Error updating category:", error);

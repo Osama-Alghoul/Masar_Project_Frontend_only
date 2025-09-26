@@ -38,17 +38,6 @@ function CreateStorePage() {
     event.preventDefault();
     setIsSubmitting(true);
 
-    let authToken: string | null = null;
-    if (typeof window !== "undefined") {
-      authToken = localStorage.getItem("authToken");
-    }
-
-    if (!authToken) {
-      setFailure(true);
-      setIsSubmitting(false);
-      return;
-    }
-
     const formData = new FormData();
     formData.append("store_name", storeData.store_name);
     formData.append("phone", storeData.phone);
@@ -60,22 +49,10 @@ function CreateStorePage() {
     formData.append("longitude", storeData.longitude);
 
     try {
-      const response = await fetch(`${BASE_API_URL}/api/seller/store`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push("/seller/dashboard");
-        }, 1000);
-      } else {
-        setFailure(true);
-      }
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/seller/dashboard");
+      }, 3000);
     } catch (error) {
       setFailure(true);
     } finally {
@@ -116,7 +93,7 @@ function CreateStorePage() {
       <Header />
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <CustomAlert
-          message="تم انشاء المتجر بنجاح"
+          message="معلش مستحييييييييييل اعملك متجر"
           show={success}
           onClose={() => setSuccess(false)}
           success

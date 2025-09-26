@@ -118,9 +118,11 @@ export default function Header() {
 
   useEffect(() => {
     const user_info = localStorage.getItem("user_info");
-    const data = JSON.parse(user_info);
-    setUserInfo(data);
-    setNotifications([data.notifications]);
+    if (user_info) {
+      const data = JSON.parse(user_info);
+      setUserInfo(data);
+      setNotifications([data.notifications]);
+    }
   }, []);
 
   useEffect(() => {
@@ -449,7 +451,7 @@ export default function Header() {
                     className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-background"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>As</AvatarFallback>
+                      <AvatarFallback>{userInfo.name.slice(0,2)}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -550,16 +552,14 @@ export default function Header() {
                   <div className="grid gap-3">
                     {isLoggedIn ? (
                       <>
-                        
-                          <Link
-                            href={`/${
-                              userInfo?.role === "admin" ? "admin" : "seller"
-                            }/dashboard`}
-                            className="text-sm font-medium transition-colors hover:text-primary"
-                          >
-                            لوحة التحكم
-                          </Link>
-
+                        <Link
+                          href={`/${
+                            userInfo?.role === "admin" ? "admin" : "seller"
+                          }/dashboard`}
+                          className="text-sm font-medium transition-colors hover:text-primary"
+                        >
+                          لوحة التحكم
+                        </Link>
 
                         <Link
                           href={`/profile/${userInfo?.id}`}

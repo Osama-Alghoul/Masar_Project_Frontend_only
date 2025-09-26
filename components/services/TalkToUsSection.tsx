@@ -13,11 +13,6 @@ import { useState } from "react";
 export default function TalkToUsSection() {
   function send(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const message = formData.get("message") as string;
-    sendEmail(name, email, message);
     setSuccess(true);
   }
   const [success, setSuccess] = useState(false);

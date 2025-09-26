@@ -12,41 +12,26 @@ import UserManagementTab from "@/components/admin/UserMangmentTab";
 import StoreManagementTab from "@/components/admin/StoreManagmentTab";
 import ProductManagementTab from "@/components/admin/ProductManagmentTab";
 import Header from "@/components/main_layout/header";
+import { UserInfo, UserData, StoreData, ProductData } from "@/types/admin";
 import {
-  UserInfo,
-  UserData,
-  StoreData,
-  ProductData,
-  ServiceData,
-} from "@/types/admin";
+  adminUsersData,
+  adminProductsData,
+  adminStoresData,
+} from "@/public/mock-data/logged/mock-data";
 
 export default function AdminDashboard() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showFailAlert, setShowFailAlert] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState<string>("all");
-  // Updated storeStatusFilter
   const [storeStatusFilter, setStoreStatusFilter] = useState<
     "all" | "active" | "inactive" | "pending" | "banned"
   >("all");
   const [userData, setUserData] = useState<UserData[]>([]);
   const [storeData, setStoreData] = useState<StoreData[]>([]);
   const [productData, setProductData] = useState<ProductData[]>([]);
-  const [servicesData, setServicesData] = useState<ServiceData>({
-    city: "",
-    stores: [],
-    aids: [],
-    market: [],
-    gas_station: [],
-    restaurants: [],
-    car_services: [],
-    petrol_station: [],
-    internet: [],
-    delivery: [],
-  });
 
   const userRoleOptions = [
     { value: "all", label: "الكل" },
@@ -64,7 +49,7 @@ export default function AdminDashboard() {
   ];
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("userInfo");
+    const storedUser = localStorage.getItem("user_info");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -79,17 +64,7 @@ export default function AdminDashboard() {
 
   async function fetchUsersData() {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const responseData = await response.json();
+      const responseData = adminUsersData.data;
       setUserData(responseData);
     } catch (error) {
       console.error("Error fetching users data:", error);
@@ -98,18 +73,8 @@ export default function AdminDashboard() {
 
   async function fetchStoresData() {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const responseData = await response.json();
-      setStoreData(responseData.data);
+      const responseData = adminStoresData.data;
+      setStoreData(responseData);
     } catch (error) {
       console.error("Error fetching stores data:", error);
     }
@@ -117,18 +82,8 @@ export default function AdminDashboard() {
 
   async function fetchProductsData() {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/products`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const responseData = await response.json();
-      setProductData(responseData.data);
+      const responseData = adminProductsData.data;
+      setProductData(responseData);
     } catch (error) {
       console.error("Error fetching stores data:", error);
     }
@@ -140,31 +95,6 @@ export default function AdminDashboard() {
     fetchUsersData();
     fetchProductsData();
     setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    async function fetchServicesData() {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${API_BASE_URL}/api/admin/map`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok)
-          throw new Error(`HTTP error! status: ${response.status}`);
-        const responseData = await response.json();
-        setServicesData(responseData.services);
-      } catch (error) {
-        console.error("Error fetching stores data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchServicesData();
   }, []);
 
   async function handelUserBlock(id: number) {
@@ -189,36 +119,8 @@ export default function AdminDashboard() {
     }
   }
 
-  async function handelUserBan(
-    id: number,
-    reason: string,
-    durationValue: number,
-    durationUnit: string
-  ) {
+  async function handelUserBan() {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/users/${id}/ban`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            reason: reason,
-            duration_value: durationValue,
-            duration_unit: durationUnit,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error banning user:", errorData);
-        setShowFailAlert(true);
-        return;
-      }
       setShowSuccessAlert(true);
       fetchUsersData();
     } catch (error) {
@@ -231,23 +133,6 @@ export default function AdminDashboard() {
 
   async function handelUserUnBan(id: number) {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/users/${id}/unban`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error unbanning user:", errorData);
-        setShowFailAlert(true);
-        return;
-      }
       setShowSuccessAlert(true);
       fetchUsersData();
     } catch (error) {
@@ -263,29 +148,6 @@ export default function AdminDashboard() {
     target_id: number
   ) {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/notifications/send`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: type,
-            message: message,
-            target: "user",
-            target_id: target_id,
-          }),
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error sending notification:", errorData);
-        setShowFailAlert(true);
-        return;
-      }
       setShowSuccessAlert(true);
     } catch (error) {
       console.error("Error sending notification:", error);
@@ -317,40 +179,8 @@ export default function AdminDashboard() {
     setSearchTerm(term);
   };
 
-  const servicesCount =
-    (servicesData?.aids?.length || 0) +
-    (servicesData?.gas_station?.length || 0) +
-    (servicesData?.market?.length || 0) +
-    (servicesData?.car_services?.length || 0) +
-    (servicesData?.stores?.length || 0) +
-    (servicesData?.restaurants?.length || 0) +
-    (servicesData?.petrol_station?.length || 0) +
-    (servicesData?.internet?.length || 0) +
-    (servicesData?.delivery?.length || 0);
-
-  const handelStatusUpdateStore = async (
-    id: number,
-    status: "pending" | "active" | "inactive" | "banned"
-  ) => {
+  const handelStatusUpdateStore = async () => {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/stores/${id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: status }),
-        }
-      );
-      if (!response.ok) {
-        console.error("Error updating store status");
-        setShowFailAlert(true);
-        return;
-      }
-      const updatedStore = await response.json();
       setShowSuccessAlert(true);
       fetchStoresData();
     } catch (error) {
@@ -361,19 +191,6 @@ export default function AdminDashboard() {
 
   const handelStoreDelete = async (id: number) => {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        console.error("Error deleting store");
-        setShowFailAlert(true);
-        return;
-      }
       setShowSuccessAlert(true);
       fetchStoresData();
     } catch (error) {
@@ -427,10 +244,10 @@ export default function AdminDashboard() {
           </div>
 
           <AdminOverviewCards
-            userCount={userData.length}
-            storeCount={storeData.length}
-            productCount={productData.length}
-            servicesCount={servicesCount}
+            userCount={2}
+            storeCount={3}
+            productCount={2}
+            servicesCount={23}
           />
 
           <Tabs defaultValue="users">

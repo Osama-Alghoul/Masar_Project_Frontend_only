@@ -17,6 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { CustomAlert } from "@/components/ui/customAlert";
 import Header from "@/components/main_layout/header";
 import { userFeedback, StoreData, Feedback } from "@/types/store";
+import {
+  store_slug,
+  guest_categories,
+} from "@/public/mock-data/guest/mock-data";
 
 const MapWithNoSSR = dynamic(() => import("@/components/maps/mapWithNoSSR"), {
   ssr: false,
@@ -29,7 +33,6 @@ const MapWithNoSSR = dynamic(() => import("@/components/maps/mapWithNoSSR"), {
 
 export default function StorePage() {
   const { id } = useParams();
-  const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const [data, setData] = useState<StoreData | null>(null);
   const [content, setContent] = useState("");
@@ -53,47 +56,10 @@ export default function StorePage() {
     is_favorite: false,
   });
 
-  const fetchFeedbackStatus = async () => {
-    try {
-      const Auth_Token = localStorage.getItem("authToken");
-      if (Auth_Token === null) return;
-      const response = await fetch(
-        `${BASE_API_URL}/api/store/${id}/feedback-status`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${Auth_Token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        return;
-      }
-
-      const responseData = await response.json();
-      setUserFeedback(responseData);
-    } catch (error) {
-      console.error("Error fetching feedback status:", error);
-    }
-  };
-
   // Fetch store data
   const fetchStoreData = async () => {
     try {
-      const response = await fetch(`${BASE_API_URL}/api/guest/stores/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        router.push("/");
-        return;
-      }
-
-      const responseData = await response.json();
+      const responseData = store_slug.data[id - 1];
       setData(responseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -102,22 +68,8 @@ export default function StorePage() {
 
   const addFav = async () => {
     try {
-      const Auth_Token = localStorage.getItem("authToken");
-      if (!Auth_Token) return;
-      const response = await fetch(`${BASE_API_URL}/api/favourites/${id}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${Auth_Token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const responseMsg = await response.json();
       setSuccess(true);
-      fetchFeedbackStatus();
-      setMessage(responseMsg.message);
+      setMessage("تمت الاضافة الى المفضلة");
     } catch (error) {
       console.error("Error adding favorite:", error);
       setFailure(true);
@@ -127,44 +79,22 @@ export default function StorePage() {
   useEffect(() => {
     setLoading(true);
     fetchStoreData();
-    fetchFeedbackStatus();
     setLoading(false);
-  }, [id, BASE_API_URL, router]);
+  }, [id, router]);
 
   // Fetch categories
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch(`${BASE_API_URL}/api/guest/categories`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const responseData = await response.json();
-        if (responseData && Array.isArray(responseData.data)) {
-          setCategories(responseData.data);
-        } else if (Array.isArray(responseData)) {
-          setCategories(responseData);
-        } else {
-          console.error(
-            "Unexpected API response for categories:",
-            responseData
-          );
-          setCategories([]);
-        }
+        const responseData = guest_categories;
+        setCategories(responseData.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
         setCategories([]);
       }
     }
     fetchCategories();
-  }, [BASE_API_URL]);
+  }, []);
 
   const storeCategories = data?.products?.reduce((acc, product) => {
     if (Array.isArray(categories)) {
@@ -195,29 +125,9 @@ export default function StorePage() {
   const handelRatingSend = async () => {
     setSubmitting(true);
     try {
-      const authToken = localStorage.getItem("authToken");
-      if (!authToken) {
-        setFailure(true);
-        setSubmitting(false);
-        return;
-      }
-      const response = await fetch(`${BASE_API_URL}/api/stores/${id}/ratings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ score }),
-      });
-      if (!response.ok) {
-        setFailure(true);
-        setSubmitting(false);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       setSuccess(true);
       setMessage("تم التقييم بنجاح");
       setSubmitting(false);
-      fetchFeedbackStatus();
     } catch (error) {
       console.error(error);
     }
@@ -226,29 +136,10 @@ export default function StorePage() {
   const handleAddComment = async () => {
     setSubmitting(true);
     try {
-      const Auth_Token = localStorage.getItem("authToken");
-      const response = await fetch(
-        `${BASE_API_URL}/api/stores/${id}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Auth_Token}`,
-          },
-          body: JSON.stringify({ content }),
-        }
-      );
-      if (!response.ok) {
-        setFailure(true);
-        setSubmitting(false);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const responseData = await response.json();
       setSuccess(true);
       setMessage("تم إضافة التعليق بنجاح");
       setSubmitting(false);
       setContent("");
-      fetchFeedbackStatus();
     } catch (error) {
       console.error("Error adding comment:", error);
     }
@@ -257,30 +148,10 @@ export default function StorePage() {
   const handleUpdateComment = async (id: number, updatedContent: string) => {
     setSubmitting(true);
     try {
-      const Auth_Token = localStorage.getItem("authToken");
-      if (!Auth_Token) {
-        setFailure(true);
-        setSubmitting(false);
-        return;
-      }
-      const response = await fetch(`${BASE_API_URL}/api/comments/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Auth_Token}`,
-        },
-        body: JSON.stringify({ content: updatedContent }),
-      });
-      if (!response.ok) {
-        setFailure(true);
-        setSubmitting(false);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       setSuccess(true);
       setMessage("تم تعديل التعليق بنجاح");
       setSubmitting(false);
       setContent(updatedContent);
-      fetchFeedbackStatus();
     } catch (error) {
       console.error("Error editing comment:", error);
       setFailure(true);
@@ -290,30 +161,10 @@ export default function StorePage() {
   const handelRatingUpdate = async (id: number, updatedScore: number) => {
     setSubmitting(true);
     try {
-      const Auth_Token = localStorage.getItem("authToken");
-      if (!Auth_Token) {
-        setFailure(true);
-        setSubmitting(false);
-        return;
-      }
-      const response = await fetch(`${BASE_API_URL}/api/ratings/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Auth_Token}`,
-        },
-        body: JSON.stringify({ score: updatedScore }),
-      });
-      if (!response.ok) {
-        setFailure(true);
-        setSubmitting(false);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       setSuccess(true);
       setMessage("تم تعديل التقييم بنجاح");
       setSubmitting(false);
       setScore(updatedScore);
-      fetchFeedbackStatus();
     } catch (error) {
       console.error("Error editing rating:", error);
       setFailure(true);
@@ -323,32 +174,10 @@ export default function StorePage() {
   const handelDeleteFeedback = async (id: number) => {
     setSubmitting(true);
     try {
-      const Auth_Token = localStorage.getItem("authToken");
-      if (!Auth_Token) {
-        setFailure(true);
-        setSubmitting(false);
-        return;
-      }
-      const response = await fetch(
-        `${BASE_API_URL}/api/stores/${id}/feedback`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Auth_Token}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        setFailure(true);
-        setSubmitting(false);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       setSuccess(true);
       setMessage("تم حذف المراجعة بنجاح");
       setSubmitting(false);
       fetchStoreData();
-      fetchFeedbackStatus();
     } catch (error) {
       console.error("Error editing rating:", error);
       setFailure(true);
@@ -435,7 +264,11 @@ export default function StorePage() {
               </Link>
             </Button>
             {isUser && notOwner && (
-              <Button variant="outline" className="rounded-full" onClick={addFav}>
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={addFav}
+              >
                 {userfeedback.is_favorite ? (
                   <Image
                     src={"/ui/Heart-full.svg"}

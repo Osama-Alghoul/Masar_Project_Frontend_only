@@ -42,25 +42,9 @@ import Header from "@/components/main_layout/header";
 import { Store, Product, Data } from "@/types/seller";
 
 export default function SellerDashboard() {
-  const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
   const [open, setOpen] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
-  const [data, setData] = useState<Data>({
-    recent_comments: [],
-    recent_products: [],
-    recent_ratings: [],
-    store: {
-      id: 0,
-      name: "",
-      owner_phone: "",
-      status: "",
-      created_at: "",
-      average_rating: 0,
-      latitude: "34",
-      longitude: "31",
-      id_card_photo_url: "",
-    },
-  });
+  const [data, setData] = useState<Data>();
   const [user, setUser] = useState(null);
   const [store, setStore] = useState<Store>({
     id: 0,
@@ -85,7 +69,7 @@ export default function SellerDashboard() {
   };
 
   useEffect(() => {
-    const authToken = localStorage.getItem("userInfo");
+    const authToken = localStorage.getItem("user_info");
     if (authToken) {
       setUser(JSON.parse(authToken));
     }
@@ -99,62 +83,8 @@ export default function SellerDashboard() {
     }
   }, [user, loading]);
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true); // Set loading to true before the fetch
-
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${BASE_API_URL}/api/seller/dashboard`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const responseData = await response.json();
-        setData(responseData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false); // Set loading to false after the fetch completes (success or failure)
-      }
-    }
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    setStore(data.store as Store);
-    setProducts(data.recent_products);
-    setStats(data.recent_comments.length + data.recent_ratings.length);
-  }, [data]);
-
   const handleSendReport = async (id: number) => {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(
-        `${BASE_API_URL}/api/comments/${id}/report`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData?.message || "Failed to send report. Please try again."
-        );
-      }
       setOpen(false);
       setSuccessAlert(true);
     } catch (error: any) {
@@ -210,25 +140,13 @@ export default function SellerDashboard() {
               )}
             </div>
           </div>
-          {store.status !== "active" && (
+          
             <div className="flex items-center gap-2 text-amber-500 mb-2">
               <AlertCircle className="h-5 w-5" />
               <span className="text-sm font-medium">
-                {(() => {
-                  switch (store.status) {
-                    case "inactive":
-                      return "متجرك غير فعال! يمكنك تفعيله من خلال اعدادات المتجر";
-                    case "banned":
-                      return "متجرك محظور! يرجى التواصل مع الدعم.";
-                    case "pending":
-                      return "متجرك قيد المراجعة! سيتم تفعيله قريبًا.";
-                    default:
-                      return "";
-                  }
-                })()}
+                فش الك متجر جرب تفتح بسطة
               </span>
             </div>
-          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {store.name && (
@@ -324,7 +242,7 @@ export default function SellerDashboard() {
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2 mt-3">
-                        {data.recent_products
+                        {[].recent_products
                           .reduce((uniqueCategories, product) => {
                             if (
                               !uniqueCategories.includes(

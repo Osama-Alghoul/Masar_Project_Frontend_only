@@ -27,6 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import Header from "@/components/main_layout/header";
 import { MapData_Market, Mapdata, Coordinates } from "@/types/admin";
+import { map_data } from "@/public/mock-data/guest/mock-data";
 
 const LeafletMap = dynamic(() =>
   import("@/components/maps/LeafLetMap").then((module) => ({
@@ -73,7 +74,6 @@ export default function AdminMapPage() {
     setParentCoordinates(newCoordinates);
     setCoordinates(parentCoordinates);
   };
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [coordinates, setCoordinates] = useState<Coordinates[]>([]);
@@ -99,17 +99,7 @@ export default function AdminMapPage() {
 
   async function fetchStoresData() {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/map`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const responseData = await response.json();
+      const responseData = map_data;
       setMapData(responseData.services);
     } catch (error) {
       console.error("Error fetching stores data:", error);
@@ -148,26 +138,8 @@ export default function AdminMapPage() {
 
   const handelAddService = async () => {
     isSubmitting(true);
-    const token = localStorage.getItem("authToken");
     let formattedCoordinates = coordinates;
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/map`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          type,
-          coordinates: formattedCoordinates,
-          status: isLocationEnabled ? true : false,
-        }),
-      });
-      if (!response.ok) {
-        setFail(true);
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       setSuccess(true);
       fetchStoresData();
     } catch (error) {
@@ -180,19 +152,6 @@ export default function AdminMapPage() {
 
   const handleDeleteService = async (id: number) => {
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/map/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        console.error("Error deleting product");
-        setFail(true);
-        return;
-      }
       setSuccess(true);
       fetchStoresData();
     } catch (error) {

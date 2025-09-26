@@ -1,7 +1,5 @@
 "use client";
 
-// TODO : Fix page layout
-
 import { FormEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,6 +50,9 @@ import Header from "@/components/main_layout/header";
 import PageBanner from "@/components/main_layout/PageBanner";
 import { OwnerData, Data } from "@/types/user";
 import StoreCard_Map from "@/components/stores/storeCardAndMap";
+import { guest_profile } from "@/public/mock-data/guest/mock-data";
+import { usersData } from "@/public/mock-data/logged/mock-data";
+
 export default function ProfilePage() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const params = useParams();
@@ -63,8 +64,10 @@ export default function ProfilePage() {
   const [showFormError, setShowFormError] = useState(false);
   const [isUser, setISUser] = useState(false);
   const [message, setMessage] = useState("");
+  const [alretMessage, setAlertMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [expandedStoreId, setExpandedStoreId] = useState<number | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   const [ownerData, setOwnerData] = useState<OwnerData>({
     id: 0,
@@ -124,21 +127,9 @@ export default function ProfilePage() {
 
   async function fetchData() {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("user_info");
       if (token) {
-        const response = await fetch(`${API_BASE_URL}/api/users`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const responseData = await response.json();
+        const responseData = usersData.data[params.id - 1];
         setOwnerData(responseData);
       }
     } catch (error) {
@@ -156,24 +147,22 @@ export default function ProfilePage() {
   // Fetch for visitors
   async function fetchDataForVisitors() {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/guest/users/${params.id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
+      const response = guest_profile.data;
 
-      const data = await response.json();
-      setData(data);
+      const guest_data = response[params.id - 1];
+      setData(guest_data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   }
+
+  useEffect(() => {
+    const localData = localStorage.getItem("user_info");
+    if (localData && JSON.parse(localData).id == params.id) {
+      setIsOwner(true);
+    }
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -184,32 +173,9 @@ export default function ProfilePage() {
 
   async function handleUserInfoEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+    setIsEditing(true);
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/users/${params.id}`, {
-        method: "PUT",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        setFailure(true);
-        throw new Error("Failed to submit the data. Please try again.");
-      }
-
-      const data = await response.json();
-      // Update state with new data if needed
-      setSucssesAlert(true);
-      setShowFormError(false);
-      fetchData();
-      fetchDataForVisitors();
-    } catch (error) {
-      console.error(error);
-      setShowFormError(true);
+      setAlertMessage("هيهي لا يمكنك تعديل بيانات المستخدم في النسخة التجريبية 😎");
       setFailure(true);
     } finally {
       setIsEditing(false);
@@ -218,35 +184,9 @@ export default function ProfilePage() {
 
   async function handlePasswordChange(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+    setIsEditing(true);
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(
-        `${API_BASE_URL}/api/users/change-password`,
-        {
-          method: "POST",
-          body: JSON.stringify(passwordFromData),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        setFailure(true);
-        throw new Error("Failed to change password. Please try again.");
-      }
-      setPasswordFormData({
-        current_password: "",
-        password: "",
-        password_confirmation: "",
-      });
-      setSucssesAlert(true);
-      setShowFormError(false);
-    } catch (error) {
-      console.error(error);
-      setShowFormError(true);
+      setAlertMessage("يسطا نسخة تجريبية لا يمكنك تغيير كلمة المرور 🙂");
       setFailure(true);
     } finally {
       setIsEditing(false);
@@ -269,33 +209,13 @@ export default function ProfilePage() {
   });
 
   const handleSendReport = async (message: string) => {
+    setIsEditing(true);
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/reports`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          reported_user_id: params.id,
-          message: message,
-        }),
-      });
-
-      if (!response.ok) {
-        setFailure(true);
-        const errorData = await response.json();
-        throw new Error(
-          errorData?.message || "Failed to send report. Please try again."
-        );
-      }
-      setOpen(false);
-      setMessage("");
+      setAlertMessage("ليش تبلغ عليه وهو اصلاً مش موجود؟ في ايه يالا");
       setSucssesAlert(true);
-    } catch (error: any) {
-      setFailure(true);
-      console.error("Error sending report:", error);
+    } finally {
+      setIsEditing(false);
+      setOpen(false);
     }
   };
 
@@ -311,20 +231,20 @@ export default function ProfilePage() {
     <>
       <Header />
       <PageBanner>
-        {ownerData.username === data.username && "مرحباً"} {data.first_name}{" "}
+        {isOwner && "مرحباً"} {data.first_name}{" "}
         {data.last_name}
       </PageBanner>
       <div className="container px-4 md:px-6 py-8">
         <div className="flex flex-col w-full gap-8">
           <div className={"flex flex-col md:flex-row gap-8"}>
             <CustomAlert
-              message="تم تحديث البيانات بنجاح"
+              message={alretMessage}
               show={successAlert}
               onClose={() => setSucssesAlert(false)}
               success
             />
             <CustomAlert
-              message="حدث خطأ ما! يرجى المحاولة مرة أخرى"
+              message={alretMessage}
               show={failure}
               onClose={() => setFailure(false)}
               success={false}
@@ -346,7 +266,7 @@ export default function ProfilePage() {
                       <Badge className="mb-2">صاحب متجر</Badge>
                     )}
                   </div>
-                  {isUser && ownerData.username !== data.username && (
+                  {!isOwner && (
                     <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <Button variant={"outline"} title="ابلاغ">
@@ -401,11 +321,15 @@ export default function ProfilePage() {
                           {data.first_name.slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
-                      {ownerData.username === data.username && (
+                      {isOwner && (
                         <Button
                           size="icon"
                           variant="secondary"
                           className="absolute bottom-0 right-0 h-8 w-8 rounded-full shadow-md"
+                          onClick={() => {
+                            setSucssesAlert(true);
+                            setAlertMessage("تحطش صورتك بلاش يحسدوك على جمالك 😊");
+                          }}
                         >
                           <Camera className="h-4 w-4" />
                         </Button>
@@ -438,7 +362,7 @@ export default function ProfilePage() {
                   </div>
                 </CardContent>
               </Card>
-              {ownerData.username === data.username && (
+              {isOwner && (
                 <Tabs defaultValue="account" className="w-full">
                   <TabsList className="grid w-full grid-cols-4 rounded-lg mb-6">
                     <TabsTrigger value="account" className="rounded-md">
@@ -782,9 +706,7 @@ export default function ProfilePage() {
                     <Card>
                       <CardHeader>
                         <CardTitle>النشاط</CardTitle>
-                        <CardDescription>
-                          تقييماتك والمفضلة
-                        </CardDescription>
+                        <CardDescription>تقييماتك والمفضلة</CardDescription>
                       </CardHeader>
                       <Tabs defaultValue="user_comments" className="w-full p-4">
                         <TabsList>
@@ -910,9 +832,11 @@ export default function ProfilePage() {
                               location_address={favorite.location_address}
                               phone={favorite.phone}
                               status={
-                                favorite.status === "active" ? "active" : "inactive"
+                                favorite.status === "active"
+                                  ? "active"
+                                  : "inactive"
                               }
-                              latitude={favorite.latitude.toString()} 
+                              latitude={favorite.latitude.toString()}
                               longitude={favorite.longitude.toString()}
                               expandedStoreId={expandedStoreId}
                               toggleMap={toggleMap}
@@ -937,7 +861,7 @@ export default function ProfilePage() {
                         {data.store?.store_image !== "" && (
                           <img
                             src={data.store?.store_image}
-                            alt={`${data.store?.store_name} logo`}
+                            alt={`${data.store?.name} logo`}
                             className="h-12 w-12 rounded-full border-2 border-background"
                           />
                         )}
@@ -947,7 +871,7 @@ export default function ProfilePage() {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-bold">
-                            {data.store?.store_name}
+                            {data.store?.name}
                           </h3>
                           <p className="text-sm text-muted-foreground line-clamp-1">
                             {data.store?.location_address}
@@ -960,7 +884,7 @@ export default function ProfilePage() {
                     </CardContent>
                     <CardFooter className="p-4 pt-0 flex justify-between">
                       <div className="flex gap-2">
-                        {ownerData.username === data.username && (
+                        {isOwner && (
                           <Button asChild size="sm" variant="outline">
                             <Link href={`/seller/dashboard`}>إدارة</Link>
                           </Button>

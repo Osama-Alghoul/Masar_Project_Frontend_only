@@ -3,7 +3,7 @@
 import ReportSection from "@/components/admin/ReportSection";
 import Header from "@/components/main_layout/header";
 import { Button } from "@/components/ui/button";
-import { Loader} from "lucide-react";
+import { Loader } from "lucide-react";
 import Image from "next/image";
 import { ReportCard } from "@/components/admin/ReportCard";
 import { useEffect, useState } from "react";
@@ -19,91 +19,6 @@ export default function reportsPage() {
   const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Function to fetch reports from the API
-  const fetchReports = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${BASE_API_URL}/api/reports`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch reports");
-      }
-
-      const responseData = await response.json();
-      setReports(responseData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  async function HandelUpdateReportStatus({
-    report,
-    status,
-  }: {
-    report: Report;
-    status: string;
-  }) {
-    setSending(true);
-    const authToken = localStorage.getItem("authToken");
-    try {
-      const response = await fetch(
-        `${BASE_API_URL}/api/reports/${report.id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to update report status");
-      }
-      // Re-fetch reports to update the UI
-      fetchReports();
-    } catch (error) {
-      console.error("Error updating report status:", error);
-    } finally {
-      setSending(false);
-    }
-  }
-
-  async function HandelDeleteReportStatus({ report }: { report: Report }) {
-    setSending(true);
-    const authToken = localStorage.getItem("authToken");
-    try {
-      const response = await fetch(`${BASE_API_URL}/api/reports/${report.id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete report");
-      }
-      // Re-fetch reports to update the UI
-      fetchReports();
-    } catch (error) {
-      console.error("Error deleting report:", error);
-    } finally {
-      setSending(false);
-    }
-  }
 
   return (
     <>
@@ -111,14 +26,14 @@ export default function reportsPage() {
       {loading && (
         <Alert className="fixed bottom-4 right-4 max-w-sm">
           <Loader className="animate-spin" />
-          <AlertTitle>جار التحميل</AlertTitle>
+          <AlertTitle>فش حاجة هنا ارتاح 👀</AlertTitle>
         </Alert>
       )}
       <PageTitle
-          MainTitle="ادارة البلاغات"
-          Subtitle="ادارة بلاغات منصة مسار"
-          Arrow
-        />
+        MainTitle="ادارة البلاغات"
+        Subtitle="ادارة بلاغات منصة مسار"
+        Arrow
+      />
       <div className="container">
         <ReportSection title="معلقة">
           {reports.filter((report) => report.status === "pending").length ===
@@ -135,32 +50,13 @@ export default function reportsPage() {
               .filter((report) => report.status === "pending")
               .map((report) => (
                 <ReportCard key={report.id} report={report}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() => HandelDeleteReportStatus({ report })}
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Trash className="text-red-400" />
                   </Button>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      HandelUpdateReportStatus({
-                        report,
-                        status: "in_progress",
-                      })
-                    }
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Hourglass />
                   </Button>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      HandelUpdateReportStatus({ report, status: "resolved" })
-                    }
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Check />
                   </Button>
                 </ReportCard>
@@ -182,29 +78,13 @@ export default function reportsPage() {
               .filter((report) => report.status === "in_progress")
               .map((report) => (
                 <ReportCard key={report.id} report={report}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() => HandelDeleteReportStatus({ report })}
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Trash className="text-red-400" />
                   </Button>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      HandelUpdateReportStatus({ report, status: "pending" })
-                    }
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Clock />
                   </Button>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      HandelUpdateReportStatus({ report, status: "resolved" })
-                    }
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Check />
                   </Button>
                 </ReportCard>
@@ -226,32 +106,13 @@ export default function reportsPage() {
               .filter((report) => report.status === "resolved")
               .map((report) => (
                 <ReportCard key={report.id} report={report}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() => HandelDeleteReportStatus({ report })}
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Trash className="text-red-400" />
                   </Button>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      HandelUpdateReportStatus({ report, status: "pending" })
-                    }
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Clock />
                   </Button>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      HandelUpdateReportStatus({
-                        report,
-                        status: "in_progress",
-                      })
-                    }
-                    disabled={sending}
-                  >
+                  <Button variant={"ghost"} disabled={sending}>
                     <Hourglass />
                   </Button>
                 </ReportCard>

@@ -13,6 +13,7 @@ import Image from "next/image";
 import Loading from "./loading";
 import Header from "@/components/main_layout/header";
 import PageBanner from "@/components/main_layout/PageBanner";
+import { products_slug } from "@/public/mock-data/guest/mock-data";
 
 const MapWithNoSSR = dynamic(() => import("@/components/maps/mapWithNoSSR"), {
   ssr: false,
@@ -83,19 +84,10 @@ export default function ProductPage() {
   const params = useParams();
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/guest/products/${params.id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-        SetSimilerProducts(data.data.related_products);
-        setLoading(false);
-      });
+    const data = products_slug.data[Number(params.id) - 11];
+    setProducts(data);
+    SetSimilerProducts(data.related_products);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -122,14 +114,14 @@ export default function ProductPage() {
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
             <Link
-              href={`/stores/${products.data.store_id}`}
+              href={`/stores/${products.store_id}`}
               className="hover:text-primary transition-colors"
             >
-              {products.data.store_name}
+              {products.store_name}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2" />
             <span className="text-foreground font-medium truncate">
-              {products.data.name}
+              {products.name}
             </span>
           </nav>
 
@@ -139,10 +131,10 @@ export default function ProductPage() {
             <div className="rounded-xl overflow-hidden shadow-md bg-background col-span-1">
               <div className="relative aspect-square">
                 <Image
-                  src={products.data.photo || "/boxes.png"}
+                  src={products.photo || "/boxes.png"}
                   width={500}
                   height={500}
-                  alt={products.data.name as string}
+                  alt={products.name as string}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -151,21 +143,21 @@ export default function ProductPage() {
             {/* Product Info */}
             <div className="space-y-6 col-span-2">
               <div>
-                <Badge className="mb-2">{products.data.category_name}</Badge>
-                <h1 className="text-2xl font-bold">{products.data.name}</h1>
+                <Badge className="mb-2">{products.category_name}</Badge>
+                <h1 className="text-2xl font-bold">{products.name}</h1>
                 <span className="text-2xl">
-                  ₪{Number(products.data.price).toFixed(2)}
+                  ₪{Number(products.price).toFixed(2)}
                 </span>
               </div>
 
               <p className="text-muted-foreground">
-                {products.data.description}
+                {products.description}
               </p>
 
               <div className="pt-4 border-t">
                 <div>
                   <Link
-                    href={`https://wa.me/00${products.data.store_phone
+                    href={`https://wa.me/00${products.store_phone
                       .replace(/^\+/, "")
                       .replace(/-/g, "")}`}
                   >
@@ -224,22 +216,22 @@ export default function ProductPage() {
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-2 py-2 border-b">
                     <span className="text-muted-foreground">القسم</span>
-                    <span>{products.data.category_name}</span>
+                    <span>{products.category_name}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 py-2 border-b">
                     <span className="text-muted-foreground">المتجر</span>
                     <Link
-                      href={`/stores/${products.data.store_id}`}
+                      href={`/stores/${products.store_id}`}
                       className="text-primary hover:underline"
                     >
-                      {products.data.store_name}
+                      {products.store_name}
                     </Link>
                   </div>
                   <div className="grid grid-cols-2 gap-2 py-2 border-b">
                     <span className="text-muted-foreground">تاريخ الاضافة</span>
                     <span>
                       {new Date(
-                        products.data.created_at as string
+                        products.created_at as string
                       ).toLocaleDateString("en-US", {
                         calendar: "gregory",
                       })}
@@ -250,15 +242,15 @@ export default function ProductPage() {
               <div>
                 <div className="h-64 rounded-lg overflow-hidden">
                   <MapWithNoSSR
-                    center={[products.data.latitude, products.data.longitude]}
+                    center={[products.latitude, products.longitude]}
                     zoom={15}
                     markers={[
                       {
                         position: [
-                          products.data.latitude,
-                          products.data.longitude,
+                          products.latitude,
+                          products.longitude,
                         ],
-                        title: products.data.store_name as string,
+                        title: products.store_name as string,
                         type: "store",
                       },
                     ]}
@@ -266,7 +258,7 @@ export default function ProductPage() {
                 </div>
                 <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
-                  <span>{products.data.location_address}</span>
+                  <span>{products.location_address}</span>
                 </div>
               </div>
             </div>

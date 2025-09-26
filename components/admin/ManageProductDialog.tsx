@@ -47,22 +47,7 @@ const ManageProductDialog: React.FC<ManageProductDialogProps> = ({
   const handelProductDelete = async (id: number) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`${API_BASE_URL}/api/admin/products/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error deleting product:", errorData);
-        return;
-      } else {
-        onProductDeleted(id);
-      }
+      onProductDeleted(id);
     } catch (error) {
       console.error("Error deleting product:", error);
     } finally {
