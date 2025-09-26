@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { MapPinIcon, ShoppingBag } from "lucide-react";
+import { AlertCircle, MapPinIcon, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 export default function HeroSection() {
@@ -17,6 +17,13 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-l from-background/95 via-background/80 to-background/30 flex pt-5">
         <div className="container px-4 md:px-6 py-12">
           <div className="max-w-4xl space-y-6 animate-slide-up mb-12">
+            <div className="flex items-center gap-2 text-amber-500 mb-2">
+              <AlertCircle className="h-5 w-5" />
+              <span className="text-sm font-medium">
+                يرجى العلم ان هذه النسخة لا تتمتع بجميع المزايا التي قمنا بتطويرها بالفعل وانما فقط للعرض
+                <br />مع اطيب تحيات فريق مسار
+              </span>
+            </div>
             <div className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
               استكشف محيطك
             </div>
@@ -51,9 +58,7 @@ export default function HeroSection() {
               </Button>
             </div>
           </div>
-          <div
-            className="flex py-5 gap-10"
-          >
+          <div className="flex py-5 gap-10">
             {/* Right Column */}
             <div className="pr-5">
               <div className="flex items-center border-t-2 py-3">
@@ -75,7 +80,7 @@ export default function HeroSection() {
               <div className="flex items-center border-t-2 py-3">
                 <span className="text-blue-700 ml-2 text-xl">✓</span>
                 <p className="m-0 text-base text-muted-foreground">
-                 حلول متطورة للبحث عن الاماكن لمناسبة لك
+                  حلول متطورة للبحث عن الاماكن لمناسبة لك
                 </p>
               </div>
               <div className="flex items-center border-t-2 border-b-2 py-3">
