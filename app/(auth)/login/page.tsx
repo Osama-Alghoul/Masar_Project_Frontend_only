@@ -140,7 +140,13 @@ const LoginPage: React.FC = () => {
             <Card className="w-full">
               <CardHeader>حسابات تجريبية</CardHeader>
               <CardContent className="grid gap-4">
-                <div className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted">
+                <div
+                  className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted cursor-pointer"
+                  onClick={() => {
+                    setEmail("user@example.com");
+                    setPassword("password");
+                  }}
+                >
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none">مستخدم</p>
                     <p className="text-sm text-muted-foreground">
@@ -149,7 +155,13 @@ const LoginPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground">password</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted">
+                <div
+                  className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted cursor-pointer"
+                  onClick={() => {
+                    setEmail("seller@example.com");
+                    setPassword("password");
+                  }}
+                >
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none">بائع</p>
                     <p className="text-sm text-muted-foreground">
@@ -158,7 +170,13 @@ const LoginPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground">password</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted">
+                <div
+                  className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted cursor-pointer"
+                  onClick={() => {
+                    setEmail("admin@example.com");
+                    setPassword("password");
+                  }}
+                >
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none">مدير</p>
                     <p className="text-sm text-muted-foreground">
