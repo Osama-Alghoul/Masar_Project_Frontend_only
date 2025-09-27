@@ -93,7 +93,7 @@ function CreateStorePage() {
       <Header />
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <CustomAlert
-          message="معلش مستحييييييييييل اعملك متجر"
+          message="لا يمكنك انشاء متجر في نسخة العرض"
           show={success}
           onClose={() => setSuccess(false)}
           success

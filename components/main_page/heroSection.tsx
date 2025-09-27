@@ -20,8 +20,11 @@ export default function HeroSection() {
             <div className="flex items-center gap-2 text-amber-500 mb-2">
               <AlertCircle className="h-5 w-5" />
               <span className="text-sm font-medium">
-                يرجى العلم ان هذه النسخة لا تتمتع بجميع المزايا التي قمنا بتطويرها بالفعل وانما فقط للعرض
-                <br />مع اطيب تحيات فريق مسار
+                يرجى العلم ان هذه النسخة لا تتمتع بجميع المزايا التي قمنا
+                بتطويرها بالفعل وانما فقط للعرض
+                <br />
+                مع اطيب تحيات{" "}
+                <a href="https://linktr.ee/Masar_team" className="underline text-primary" target="_blank">فريق مسار</a>
               </span>
             </div>
             <div className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
