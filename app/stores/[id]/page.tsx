@@ -213,7 +213,7 @@ export default function StorePage() {
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent flex items-end">
-              <div className="p-6 flex items-center gap-4">
+              <div className="p-6 flex items-center gap-4 flex-wrap">
                 <div className="bg-background rounded-full p-1 shadow-lg">
                   <img
                     src={data?.store_image}
