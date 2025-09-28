@@ -61,7 +61,7 @@ export default function HeroSection() {
               </Button>
             </div>
           </div>
-          <div className="flex py-5 gap-10">
+          <div className="py-5 gap-10 hidden md:flex">
             {/* Right Column */}
             <div className="pr-5">
               <div className="flex items-center border-t-2 py-3">
@@ -98,7 +98,7 @@ export default function HeroSection() {
       </div>
 
       {/* Decorative elements */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent"></div>
+      <div className="md:absolute hidden bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent"></div>
       <div className="absolute bottom-10 right-10 hidden lg:block">
         <div className="rounded-full bg-background/80 backdrop-blur-md p-4 shadow-lg">
           <Image src="/logo.png" alt="Logo" width={32} height={32} />

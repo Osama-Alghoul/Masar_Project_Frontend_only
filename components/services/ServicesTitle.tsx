@@ -12,7 +12,7 @@ export default function ServicesTitle({
   white?: boolean;
 }) {
   return (
-    <div className={`flex flex-col ${centralize ? "items-center" : ""} my-12`}>
+    <div className={`flex flex-col ${centralize ? "items-center" : ""} my-12 flex-wrap`}>
       <div className="flex items-center">
         <Image
           src="/ui/Arrow.svg"

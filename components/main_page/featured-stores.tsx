@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, Loader2 } from "lucide-react";
 import { stores as storesData } from "@/public/mock-data/logged/mock-data";
 
 interface Store {
@@ -42,15 +42,17 @@ export default function FeaturedStores() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((i) => (
           <Card key={i} className="overflow-hidden h-full animate-pulse">
-            <div className="h-48 bg-muted"></div>
-            <CardContent className="p-4">
-              <div className="h-6 w-2/3 bg-muted rounded mb-2"></div>
-              <div className="h-4 w-full bg-muted rounded mb-4"></div>
-              <div className="flex gap-2">
-                <div className="h-5 w-16 bg-muted rounded"></div>
-                <div className="h-5 w-16 bg-muted rounded"></div>
-              </div>
-            </CardContent>
+            <Suspense fallback={<Loader2 className="animate-spin" />}>
+              <div className="h-48 bg-muted"></div>
+              <CardContent className="p-4">
+                <div className="h-6 w-2/3 bg-muted rounded mb-2"></div>
+                <div className="h-4 w-full bg-muted rounded mb-4"></div>
+                <div className="flex gap-2">
+                  <div className="h-5 w-16 bg-muted rounded"></div>
+                  <div className="h-5 w-16 bg-muted rounded"></div>
+                </div>
+              </CardContent>
+            </Suspense>
           </Card>
         ))}
       </div>
