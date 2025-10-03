@@ -8,7 +8,13 @@ import Footer from "@/components/main_layout/Footer";
 export const metadata: Metadata = {
   title: "مسار",
   description: "استكشف الخدمات المتاحة في المدينة",
+
   openGraph: {
+    url: "https://masar-project-frontui.vercel.app", // This should be the page URL, not the image URL
+    type: 'website',
+    title: "مسار", 
+    description: "استكشف الخدمات المتاحة في المدينة",
+
     images: [
       {
         url: "https://masar-project-frontui.vercel.app/logo.png", // Must be an absolute URL
@@ -17,6 +23,18 @@ export const metadata: Metadata = {
         alt: "مسار - استكشف الخدمات المتاحة في المدينة",
       },
     ],
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    images: [
+      {
+        url: "https://masar-project-frontui.vercel.app/logo.png",
+        alt: "مسار - استكشف الخدمات المتاحة في المدينة",
+      },
+    ],
+    title: "مسار",
+    description: "استكشف الخدمات المتاحة في المدينة",
   },
 };
 
