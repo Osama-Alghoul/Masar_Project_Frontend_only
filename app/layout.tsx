@@ -1,6 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
-import "./globals.css"; // Keep this one
+import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/main_layout/Footer";
@@ -8,6 +8,16 @@ import Footer from "@/components/main_layout/Footer";
 export const metadata: Metadata = {
   title: "مسار",
   description: "استكشف الخدمات المتاحة في المدينة",
+  openGraph: {
+    images: [
+      {
+        url: "./icon.png", // Must be an absolute URL
+        width: 1200,
+        height: 630,
+        alt: "مسار - استكشف الخدمات المتاحة في المدينة",
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({
