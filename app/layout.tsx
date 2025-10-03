@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     images: [
       {
-        url: "./icon.png", // Must be an absolute URL
+        url: "https://masar-project-frontui.vercel.app/logo.png", // Must be an absolute URL
         width: 1200,
         height: 630,
         alt: "مسار - استكشف الخدمات المتاحة في المدينة",
