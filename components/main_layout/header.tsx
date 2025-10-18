@@ -451,7 +451,9 @@ export default function Header() {
                     className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-background"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>{userInfo.name.slice(0,2)}</AvatarFallback>
+                      <AvatarFallback>
+                        {userInfo.name.slice(0, 2)}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
